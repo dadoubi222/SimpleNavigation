@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>我的导航</title>
+	<link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+	<header></header>
+	<main id="main"> 
+		<div id="keyboard" class="warpper"></div>
+	</main>
+	<footer></footer>
+	<script>
+		var initalHash = init()
+		var keys = initalHash['character']
+		var hash = initalHash['webOfcharacter']
+
+		for(var index=0;index < keys['length'];index=index+1){
+			console.log('index='+index)
+			var div = createElementOfName('div',{className:'row'})
+			keyboard.appendChild(div)
+			var row = keys[index]
+			console.log(row)
+			var index2 = 0
+			for(var index2=0;index2<row['length'];index2=index2+1){
+				var span = createElementOfName('span',{className:'text'})
+				span.textContent = row[index2]
+				var kdb = createElementOfName('kbd',{className:'soloKey'})
+				var button = createElementOfName('button',{textContent:'编辑'})
+				button.id = row[index2]
+				var img = createElementOfName('img',{className:'faviconImg'});
+				if(hash[row[index2]]){
+					img.src = 'http://'+hash[row[index2]]+'/favicon.ico'
+				}else{
+					img.src = './img/faviconReplace.ico'
+				}
+				img.onerror = function(f){
+					console.log('favicon下载失败')
+					f.target.src = './img/faviconReplace.ico'
+				}
+				button.onclick = function(f){
+					var button2 = f['target']
+					var img2 = button2.previousSibling
+					var cId = f.target.id
+					var cContent = prompt('输入新的网址')
+					hash[cId] = cContent
+					img2.src = 'http://'+cContent+'/favicon.ico'
+					img2.onerror = function(ff){
+						ff.target.src = './img/faviconReplace.ico'
+					}
+					localStorage.setItem('webList', JSON.stringify(hash))
+					console.log(hash)
+				}
+				kdb.appendChild(span)
+				kdb.appendChild(img)
+				kdb.appendChild(button)
+				div.appendChild(kdb)
+			}
+		}
+
+		function init(){
+			var keys = {
+				0: ['q','w','e','r','t','y','u','i','o','p'],
+				1: ['a','s','d','f','g','h','j','k','l'],
+				2: ['z','x','c','v','b','n','m'],
+				length: 3
+			}
+			var hash = {
+				q: "www.qq.com",
+				w: "www.weibo.com",
+				e: "www.ele.me",
+				r: "www.renren.com",
+				t: "www.tianya.com",
+				y: "www.youtube.com",
+				u: "www.uc.com",
+				i: "www.iqiyi.com",
+				o: "www.opera.com",
+				p: undefined,
+				a: "www.acfun.cn",
+				s: "www.souhu.com",
+				z: "www.zhihu.com",
+				m: "www.mcdonalds.com"
+			}
+			var hashInItemLocalStorage = getFromLocalStorage('webList')
+				if(hashInItemLocalStorage){
+					hash = hashInItemLocalStorage
+				}
+				return {
+					character : keys,
+					webOfcharacter : hash
+				}
+		}
+
+		document.onkeypress = function(f){
+			var key = f['key']
+			var website = hash[key]
+			console.log(website)
+			//location.href = 'http://'+website
+			window.open("http://"+website,'_blank')
+		}
+
+		function createElementOfName(tagName,attributes){
+			var element =  document.createElement(tagName)
+			for(var key in attributes){
+				element[key] = attributes[key]
+			}
+			return element
+		}
+
+		function getFromLocalStorage(storageName){
+			return JSON.parse(localStorage.getItem(storageName) || 'null')
+		}
+	</script>
+</body>
+</html>
